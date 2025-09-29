@@ -46,6 +46,8 @@ public class ReservaPublicController {
             @RequestParam int personas,
             Model model) {
 
+        LocalDate fechaReserva = LocalDate.parse(fecha);
+
         // Buscar cliente o crearlo
         Cliente cliente = clienteRepository.findByEmail(email);
         if (cliente == null) {
@@ -56,13 +58,14 @@ public class ReservaPublicController {
         cliente.setTelefono(telefono);
         clienteRepository.save(cliente);
 
-        // Buscar mesa disponible
+        // Buscar mesa disponible (bloqueo por TODO el día)
         Optional<Mesa> mesaOpt = mesaRepository.findAll().stream()
                 .filter(m -> m.isDisponible() && m.getCapacidad() >= personas)
+                .filter(m -> reservaRepository.findByMesaIdAndFecha(m.getId(), fechaReserva).isEmpty())
                 .findFirst();
 
         if (mesaOpt.isEmpty()) {
-            model.addAttribute("mensaje", "❌ Lo sentimos, no hay mesas disponibles para esa fecha y hora.");
+            model.addAttribute("mensaje", "❌ Lo sentimos, no hay mesas disponibles para esa fecha.");
             return "reservar";
         }
 
@@ -72,17 +75,14 @@ public class ReservaPublicController {
         Reserva reserva = new Reserva();
         reserva.setCliente(cliente);
         reserva.setMesa(mesa);
-        reserva.setFecha(LocalDate.parse(fecha));
-        reserva.setHora(LocalTime.parse(hora));
+        reserva.setFecha(fechaReserva);
+        reserva.setHora(LocalTime.parse(hora)); // Informativo
         reserva.setPersonas(personas);
         reserva.setEstado("Pendiente");
 
         reservaRepository.save(reserva);
 
-        // Actualizar mesa como ocupada
-        mesa.setDisponible(false);
-        mesaRepository.save(mesa);
-
+        // Mensaje de éxito
         model.addAttribute("mensaje", "✅ Reserva creada con éxito. Mesa asignada: " + mesa.getNumero());
         return "reservar";
     }
