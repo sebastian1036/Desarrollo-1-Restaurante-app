@@ -1,11 +1,9 @@
 package com.co.programacion.ejemplosprintboot1.controllers;
 
-import com.co.programacion.ejemplosprintboot1.entities.Cliente;
-import com.co.programacion.ejemplosprintboot1.entities.Mesa;
-import com.co.programacion.ejemplosprintboot1.entities.Reserva;
-import com.co.programacion.ejemplosprintboot1.repositories.ClienteRepository;
-import com.co.programacion.ejemplosprintboot1.repositories.MesaRepository;
-import com.co.programacion.ejemplosprintboot1.repositories.ReservaRepository;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,9 +11,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Optional;
+import com.co.programacion.ejemplosprintboot1.entities.Cliente;
+import com.co.programacion.ejemplosprintboot1.entities.Mesa;
+import com.co.programacion.ejemplosprintboot1.entities.Reserva;
+import com.co.programacion.ejemplosprintboot1.repositories.ClienteRepository;
+import com.co.programacion.ejemplosprintboot1.repositories.MesaRepository;
+import com.co.programacion.ejemplosprintboot1.repositories.ReservaRepository;
 
 @Controller
 public class ReservaPublicController {
@@ -29,13 +30,13 @@ public class ReservaPublicController {
     @Autowired
     private ReservaRepository reservaRepository;
 
-    // 👉 Muestra el formulario
+    // Muestra el formulario
     @GetMapping("/reservar")
     public String mostrarFormulario() {
         return "reservar";
     }
 
-    // 👉 Procesa el formulario
+    // Procesa el formulario
     @PostMapping("/reservar")
     public String procesarReserva(
             @RequestParam String nombre,
